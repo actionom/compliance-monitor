@@ -18,6 +18,7 @@ from modules.policy_engine import evaluate_all_events, compute_compliance_postur
 from modules.alert_manager import process_alerts, get_escalated
 from modules.report_generator import generate_report
 from modules.control_matrix import get_categories, get_all_controls
+from modules.auth import login_screen, logout, is_authenticated, get_auth_info
 from modules.client_ingestion import (ingest_client_file, get_template_csv,
     get_all_source_names, get_source_description, get_required_columns)
 
@@ -64,6 +65,16 @@ with st.sidebar:
     st.divider()
     for fw in ["UK GDPR / DPA 2018","ISO 27001:2022","NIST CSF 2.0","Cyber Essentials"]:st.markdown(f"✅ {fw}")
     if st.session_state.last_refresh:st.caption(f"Last refresh: {st.session_state.last_refresh}")
+    st.divider()
+    auth=get_auth_info()
+    st.markdown(f"<div style='background:#F0F7FF;border-radius:8px;padding:10px;font-size:12px;'><strong>👤 {auth['client_name']}</strong><br>Plan: {auth['plan']}<br>Licence: {auth['expiry']}</div>",unsafe_allow_html=True)
+    st.markdown("<br>",unsafe_allow_html=True)
+    if st.button("🔓 Logout",use_container_width=True):logout()
+
+# ── Authentication Gate ──────────────────────────────────────────────────────
+if not is_authenticated():
+    login_screen()
+    st.stop()
 
 if not st.session_state.violations:
     with st.spinner("Initialising..."):load_sim()
