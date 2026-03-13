@@ -131,7 +131,7 @@ def render_dashboard(source_viol,filtered):
             with st.spinner("Generating..."):
                 rp=os.path.join(os.path.dirname(__file__),"reports","compliance_report.pdf")
                 os.makedirs(os.path.dirname(rp),exist_ok=True)
-                generate_report(filtered,risk,posture,rp,client_name=st.session_state.client_name);st.session_state.report_path=rp
+                generate_report(filtered,risk,posture,rp,client_name=st.session_state.client_name)                 st.session_state.report_path=rp
             st.success(f"✅ Report generated — {len(filtered)} violations.")
     with r2:
         if st.session_state.report_path and os.path.exists(st.session_state.report_path):
