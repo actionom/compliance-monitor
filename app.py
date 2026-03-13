@@ -44,7 +44,7 @@ def load_sim(n=4):
     st.session_state.last_refresh=datetime.now().strftime("%d %b %Y %H:%M:%S")
 
 with st.sidebar:
-    st.markdown("<div style='text-align:center;padding:10px 0'><h3 style='color:#1F497D;margin:0'>🛡️ SME Compliance Monitor</h3><p style='color:#666;font-size:11px;margin:4px 0'>v2.0.0 | Opoku Mensah (w25035430)</p></div>",unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center;padding:10px 0'><h3 style='color:#1F497D;margin:0'>🛡️ SME Compliance Monitor</h3><p style='color:#666;font-size:11px;margin:4px 0'>v2.0.0 | Opoku Mensah</p></div>",unsafe_allow_html=True)
     st.divider()
     mode=st.radio("🎯 Mode",["🔬 Simulation Mode","🏢 Client Audit Mode"])
     st.session_state.active_mode="simulation" if "Simulation" in mode else "client"
@@ -131,7 +131,7 @@ def render_dashboard(source_viol,filtered):
             with st.spinner("Generating..."):
                 rp=os.path.join(os.path.dirname(__file__),"reports","compliance_report.pdf")
                 os.makedirs(os.path.dirname(rp),exist_ok=True)
-                generate_report(filtered,risk,posture,rp);st.session_state.report_path=rp
+                generate_report(filtered,risk,posture,rp,client_name=st.session_state.client_name);st.session_state.report_path=rp
             st.success(f"✅ Report generated — {len(filtered)} violations.")
     with r2:
         if st.session_state.report_path and os.path.exists(st.session_state.report_path):
@@ -232,4 +232,4 @@ with tab3:
     st.dataframe(ctrl_df,use_container_width=True,height=500)
 
 st.divider()
-st.markdown("<p style='text-align:center;color:#999;font-size:11px'>SME Compliance Monitor v2.0.0 &nbsp;|&nbsp; Opoku Mensah (w25035430) &nbsp;|&nbsp; Northumbria University &nbsp;|&nbsp; UK GDPR · ISO/IEC 27001:2022 · NIST CSF 2.0 · Cyber Essentials</p>",unsafe_allow_html=True)
+st.markdown("<p style='text-align:center;color:#999;font-size:11px'>SME Compliance Monitor v2.0.0 &nbsp;|&nbsp; Opoku Mensah &nbsp;|&nbsp; Cybersecurity Consultant &nbsp;|&nbsp; UK GDPR · ISO/IEC 27001:2022 · NIST CSF 2.0 · Cyber Essentials</p>",unsafe_allow_html=True)
