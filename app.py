@@ -19,6 +19,7 @@ from modules.alert_manager import process_alerts, get_escalated
 from modules.report_generator import generate_report
 from modules.control_matrix import get_categories, get_all_controls
 from modules.auth import login_screen, logout, is_authenticated, get_auth_info
+from modules.email_alerts import send_alert_email, send_test_email, is_email_configured
 from modules.client_ingestion import (ingest_client_file, get_template_csv,
     get_all_source_names, get_source_description, get_required_columns)
 
@@ -150,6 +151,29 @@ def render_dashboard(source_viol,filtered):
             with open(st.session_state.report_path,"rb") as f:
                 cl2=st.session_state.client_name.replace(" ","_") if st.session_state.client_name else ""
                 st.download_button("⬇️ Download PDF Report",f.read(),f"SME_Compliance_Report{'_'+cl2 if cl2 else ''}_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf","application/pdf",use_container_width=True)
+
+    # -- Email Alert Section --------------------------------------------------
+    st.subheader("📧 Email Alert")
+    if is_email_configured():
+        ea1,ea2=st.columns([2,1])
+        with ea1:
+            alert_email=st.text_input("Send alert to email address",placeholder="client@company.com",key="alert_email_input")
+        with ea2:
+            st.markdown("<br>",unsafe_allow_html=True)
+            if st.button("📤 Send Alert Email",use_container_width=True):
+                if alert_email:
+                    with st.spinner("Sending..."):
+                        result=send_alert_email(alert_email,st.session_state.client_name,filtered,risk,posture)
+                    if result["success"]:st.success(f"✅ {result['message']}")
+                    else:st.error(f"❌ {result['message']}")
+                else:st.warning("Please enter an email address.")
+            if st.button("🧪 Send Test Email",use_container_width=True,key="test_email_btn"):
+                if alert_email:
+                    result=send_test_email(alert_email)
+                    if result["success"]:st.success(f"✅ {result['message']}")
+                    else:st.error(f"❌ {result['message']}")
+    else:
+        st.info("📧 Email alerting is available but requires Gmail App Password setup. Go to Streamlit Cloud → Settings → Secrets and add: GMAIL_APP_PASSWORD = \"your-app-password\"")
 
 with tab1:
     sv=st.session_state.client_violations if (st.session_state.active_mode=="client" and st.session_state.client_violations) else st.session_state.violations
